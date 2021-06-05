@@ -8,9 +8,9 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "src/jwt/jwt.service";
 
 export class UsersService {
-    constructor(@InjectRepository(User) private readonly users: Repository<User>, private readonly config: ConfigService,
-        private readonly jwtService: JwtService) {
-        this.jwtService.hello()
+    constructor(@InjectRepository(User) private readonly users: Repository<User>, 
+    private readonly config: ConfigService,
+    private readonly jwtService: JwtService) {
     }
 
     async createAccount({ email, password, role }: CreateAccountInput): Promise<[boolean, string?]> {
