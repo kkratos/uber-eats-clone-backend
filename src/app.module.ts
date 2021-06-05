@@ -5,6 +5,10 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Restaurant } from './restaurants/entities/restaurants.entity';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
+import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -19,6 +23,7 @@ import { Restaurant } from './restaurants/entities/restaurants.entity';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        SECRET_KEY: Joi.string().required()
       })
     }),
     TypeOrmModule.forRoot({
@@ -30,12 +35,16 @@ import { Restaurant } from './restaurants/entities/restaurants.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: true,
-      entities: [Restaurant]
+      // entities: [Restaurant]
+      entities: [User]
     }),
-    RestaurantsModule,
+    // RestaurantsModule,
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
+    UsersModule,
+    CommonModule,
+    JwtModule.forRoot(),
   ],
   controllers: [],
   providers: [],
