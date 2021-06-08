@@ -8,7 +8,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe()
   )
-  app.use(JwtMiddleware)
   await app.listen(3000);
 }
 bootstrap();

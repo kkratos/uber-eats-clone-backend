@@ -11,7 +11,7 @@ export class UsersService {
     constructor(@InjectRepository(User) private readonly users: Repository<User>,
         private readonly config: ConfigService,
         private readonly jwtService: JwtService) {
-       
+
     }
 
     async createAccount({ email, password, role }: CreateAccountInput): Promise<[boolean, string?]> {
@@ -66,5 +66,9 @@ export class UsersService {
                 error
             }
         }
+    }
+
+    async findById(id: number): Promise<User> {
+        return this.users.findOne({ id });
     }
 }
