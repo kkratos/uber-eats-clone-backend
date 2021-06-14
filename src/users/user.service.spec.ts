@@ -1,4 +1,3 @@
-import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { JwtService } from "src/jwt/jwt.service";
@@ -8,18 +7,16 @@ import { Verification } from "./entities/verification.entity";
 import { UsersService } from "./users.service";
 
 
-const mockRepository = {
+const mockRepository = () => ({
     findOne: jest.fn(),
     save: jest.fn(),
     create: jest.fn()
-}
+})
 
-const mockJwtService = {
+const mockJwtService = () => ({
     sign: jest.fn(),
     verify: jest.fn()
-}
-
-
+})
 
 // const mockMailService = {
 //     sendVerificationEmail: jest.fn()
@@ -36,13 +33,13 @@ describe("UsersService", () => {
         const module = await Test.createTestingModule({
             providers: [UsersService,
                 {
-                    provide: getRepositoryToken(User), useValue: mockRepository
+                    provide: getRepositoryToken(User), useValue: mockRepository(),
                 },
                 {
-                    provide: getRepositoryToken(Verification), useValue: mockRepository
+                    provide: getRepositoryToken(Verification), useValue: mockRepository(),
                 },
                 {
-                    provide: JwtService, useValue: mockJwtService
+                    provide: JwtService, useValue: mockJwtService()
                 },
                 // {
                 //     provide:mailService,
@@ -60,21 +57,29 @@ describe("UsersService", () => {
     });
 
     describe("Create account", () => {
+        const createAccount = {
+            email: '',
+            password: '',
+            role: 0
+        }
         it('should fail if user exits', async () => {
             usersRepository.findOne.mockResolvedValue({
                 id: 1,
-                email: 'akakakaka',
-            });
-            const result = await service.createAccount({
                 email: '',
-                password: '',
-                role: 0
-            })
+            });
+            const result = await service.createAccount(createAccount)
             expect(result).toMatchObject({ ok: false, error: "User already exits with that email" });
         });
+        it('should create a new user', async () => {
+            usersRepository.findOne.mockResolvedValue(undefined);
+            usersRepository.create.mockReturnValue(createAccount);
+            await service.createAccount(createAccount);
+            expect(usersRepository.create).toHaveBeenCalledTimes(1);
+            expect(usersRepository.create).toHaveBeenCalledWith(createAccount);
+            expect(usersRepository.save).toHaveBeenCalledTimes(1);
+            expect(usersRepository.save).toHaveBeenCalledWith(createAccount);
+        })
     });
-
-
 
     it.todo('login');
     it.todo('findById');

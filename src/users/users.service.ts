@@ -18,14 +18,15 @@ export class UsersService {
     async createAccount({ email, password, role }: CreateAccountInput): Promise<CreateAccountOutput> {
         try {
             const exists = await this.users.findOne({ email });
-            console.log(exists);
             if (exists) {
                 return { ok: false, error: "User already exits with that email" };
             }
             const user = await this.users.save(this.users.create({ email, password, role }));
-            const verification = this.verifications.save(this.verifications.create({
-                user
-            }))
+            const verification = await this.verifications.save(
+                this.verifications.create({
+                    user,
+                }),
+            );
             return { ok: true }
         } catch (e) {
             return { ok: false, error: "Couldn't create an account" };
