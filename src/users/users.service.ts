@@ -29,7 +29,7 @@ export class UsersService {
             );
             return { ok: true }
         } catch (e) {
-            return { ok: false, error: "Couldn't create an account" };
+            return { ok: false, error: "Couldn't create account" };
         }
     }
 
@@ -50,10 +50,10 @@ export class UsersService {
             if (!passwordCorrect) {
                 return {
                     ok: false,
-                    error: "wrong password"
+                    error: "Wrong password"
                 }
             }
-            console.log(user)
+
             const token = this.jwtService.sign(user.id)
             // const token = jwt.sign({ id: user.id }, this.config.get('PRIVATE_KEY'));
             return {
