@@ -15,28 +15,31 @@ export class UsersService {
         private readonly jwtService: JwtService) {
     }
 
-    async createAccount({ email, password, role }: CreateAccountInput): Promise<CreateAccountOutput> {
+    async createAccount({
+        email,
+        password,
+        role,
+    }: CreateAccountInput): Promise<CreateAccountOutput> {
         try {
             const exists = await this.users.findOne({ email });
             if (exists) {
-                return { ok: false, error: "User already exits with that email" };
+                return { ok: false, error: 'There is a user with that email already' };
             }
-            const user = await this.users.save(this.users.create({ email, password, role }));
+            const user = await this.users.save(
+                this.users.create({ email, password, role }),
+            );
             const verification = await this.verifications.save(
                 this.verifications.create({
                     user,
                 }),
             );
-            return { ok: true }
+            // this.mailService.sendVerificationEmail(user.email, verification.code);
+            return { ok: true };
         } catch (e) {
             return { ok: false, error: "Couldn't create account" };
         }
     }
-
     async login({ email, password }: LoginInput): Promise<LoginOutput> {
-        //find the user with the email
-        //check if password is correct
-        //make a JWT and give it to the user
 
         try {
             const user = await this.users.findOne({ email }, { select: ['id', 'password'] });
