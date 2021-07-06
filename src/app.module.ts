@@ -55,13 +55,13 @@ import { Verification } from './users/entities/verification.entity';
   providers: [],
 })
 
-export class AppModule { }
+// export class AppModule { }
 
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(JwtMiddleware).forRoutes({
-//       path: "/graphql",
-//       method: RequestMethod.POST,
-//     })
-//   }
-// }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: "/graphql",
+      method: RequestMethod.POST,
+    })
+  }
+}

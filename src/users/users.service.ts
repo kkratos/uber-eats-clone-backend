@@ -1,15 +1,15 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAccountInput, CreateAccountOutput } from './dtos/create-account.dto';
-import { LoginInput, LoginOutput } from './dtos/loginInput.dto';
+import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { JwtService } from "../jwt/jwt.service";
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
-import { userProfileOutput } from './dtos/user.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 
-export class UsersService {
+export class UserService {
     constructor(@InjectRepository(User) private readonly users: Repository<User>,
         @InjectRepository(Verification) private readonly verifications: Repository<Verification>,
         private readonly jwtService: JwtService) {
@@ -71,7 +71,7 @@ export class UsersService {
         }
     }
 
-    async findById(id: number): Promise<userProfileOutput> {
+    async findById(id: number): Promise<UserProfileOutput> {
         try {
             const user = await this.users.findOneOrFail({ id });
             return {
@@ -83,24 +83,30 @@ export class UsersService {
         }
     }
 
-    async editProfile(userId: number, { email, password }: EditProfileInput): Promise<EditProfileOutput> {
-
+    async editProfile(
+        userId: number,
+        { email, password }: EditProfileInput,
+    ): Promise<EditProfileOutput> {
         try {
             const user = await this.users.findOne(userId);
             if (email) {
-                user.email = email
+                user.email = email;
                 user.verified = false;
-                await this.verifications.save(this.verifications.create({ user }))
+                await this.verifications.delete({ user: { id: user.id } });
+                const verification = await this.verifications.save(
+                    this.verifications.create({ user }),
+                );
             }
             if (password) {
-                user.password = password
+                user.password = password;
             }
             await this.users.save(user);
-            return { ok: true }
+            return {
+                ok: true,
+            };
         } catch (error) {
-            return { ok: false, error: "Could not update profile" }
+            return { ok: false, error: 'Could not update profile.' };
         }
-
     }
 
     async verifyEmail(code: string): Promise<VerifyEmailOutput> {
