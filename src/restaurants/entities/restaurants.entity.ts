@@ -1,42 +1,31 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
+import { CoreEntity } from "src/common/entities/core.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Category } from "./category.entity";
 
 @ObjectType()  //! Object type of grapgql
 @Entity()      //! entity type for typeorm
-export class Restaurant {
-
-    @PrimaryGeneratedColumn() //! typeorm
-    @Field(type => Number)    //!Graphql
-    id: number
+export class Restaurant extends CoreEntity {
 
     @Field(type => String)
     @Column()
-    @IsString() //! Validation
-    @Length(5) //! Validation
+    @IsString()
     name: string;
 
-    @Field(type => Boolean, { nullable: true })
-    @Column({ default: true })
-    @IsBoolean()
-    @IsOptional()
-    isVegan: boolean
+    @Field(type => String)
+    @Column()
+    @IsString()
+    coverImg: string;
 
     @Field(type => String, { defaultValue: ';a;a' })
     @Column()
     @IsString()
     address: string
 
-    // @Field(type => String)
-    // @Column()
-    // @IsString()
-    // ownerName: string
-
-    // @Field(type => String)
-    // @Column()
-    // @IsString()
-    // categoryName: string
+    @Field(type => Category)
+    @ManyToOne(type => Category, category => category.restaurants)
+    category: Category;
 }
 
 //Repository is a the one incharge of interacting with the entity.

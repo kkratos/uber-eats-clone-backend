@@ -66,10 +66,10 @@ describe('UserModule (e2e)', () => {
         }
         `)
         .expect(200)
-      // .expect(res => {
-      //   expect(res.body.data.createAccount.ok).toBe(true);
-      //   expect(res.body.data.createAccount.error).toBe(null);
-      // });
+        .expect(res => {
+          expect(res.body.data.createAccount.ok).toBe(true);
+          expect(res.body.data.createAccount.error).toBe(null);
+        });
     });
 
     it('should fail if account already exists', () => {
