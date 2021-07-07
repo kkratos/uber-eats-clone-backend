@@ -4,7 +4,7 @@ import { CoreEntity } from "src/common/entities/core.entity";
 import { Column, Entity, OneToMany } from "typeorm";
 import { Restaurant } from "./restaurants.entity";
 
-
+@InputType('CategoryInputType', { isAbstract: true })
 @ObjectType()  //! Object type of grapgql
 @Entity()      //! entity type for typeorm
 export class Category extends CoreEntity {
