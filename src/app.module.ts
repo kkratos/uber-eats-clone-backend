@@ -48,6 +48,7 @@ import { Category } from './restaurants/entities/category.entity';
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    AuthModule,
     UsersModule,
     RestaurantsModule,
   ],

@@ -7,9 +7,9 @@ import { CoreEntity } from "src/common/entities/core.entity";
 import { Restaurant } from "src/restaurants/entities/restaurants.entity";
 
 export enum UserRole {
-    Owner,
-    Client,
-    Delivery
+    Client = " Client",
+    Owner = "Owner",
+    Delivery = "Delivery"
 }
 
 registerEnumType(UserRole, { name: "UserRole" })
