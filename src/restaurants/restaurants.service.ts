@@ -6,14 +6,14 @@ import { CreateRestaurantInput, CreateRestaurantOutput } from "./dto/create-rest
 import { EditRestaurantInput, EditRestaurantOutput } from "./dto/edit-restaurant.dto";
 import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurants.entity";
+import { CategoryRepository } from "./repositories/category.repository";
 
 @Injectable()
 export class RestaurantService {
     constructor(
         @InjectRepository(Restaurant)
         private readonly restaurant: Repository<Restaurant>,
-        @InjectRepository(Category)
-        private readonly categories: Repository<Category>
+        private readonly categories: CategoryRepository
     ) { }
 
 
@@ -34,7 +34,8 @@ export class RestaurantService {
         try {
             const newRestaurant = this.restaurant.create(createRestaurantInput);
             newRestaurant.owner = owner
-            const category = await this.getOrCreateCategory(createRestaurantInput.categoryName);
+            const category = await this.categories.getOrCreate(createRestaurantInput.categoryName);
+
             newRestaurant.category = category;
             await this.restaurant.save(newRestaurant); //!add to database
             return {
@@ -65,7 +66,16 @@ export class RestaurantService {
                     error: "You can't edit a restaurant you don't own"
                 }
             }
-            //////////
+            let category: Category = null;
+            if (editRestaurantInput.categoryName) {
+                category = await this.categories.getOrCreate(editRestaurantInput.categoryName)
+            }
+
+            await this.restaurant.save([{
+                id: editRestaurantInput.restaurantId,
+                ...editRestaurantInput,
+                category: category
+            }])
             return {
                 ok: true
             }
