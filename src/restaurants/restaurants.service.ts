@@ -120,4 +120,8 @@ export class RestaurantService {
             }
         }
     }
+
+    countRestaurants(category: Category) {
+        return this.restaurant.count({ category })
+    }
 }
