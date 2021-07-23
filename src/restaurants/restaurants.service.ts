@@ -15,7 +15,7 @@ import { CategoryRepository } from "./repositories/category.repository";
 export class RestaurantService {
     constructor(
         @InjectRepository(Restaurant)
-        private readonly restaurant: Repository<Restaurant>,
+        private readonly restaurants: Repository<Restaurant>,
         private readonly categories: CategoryRepository
     ) { }
 
@@ -23,12 +23,12 @@ export class RestaurantService {
         owner: User,
         createRestaurantInput: CreateRestaurantInput): Promise<CreateRestaurantOutput> {
         try {
-            const newRestaurant = this.restaurant.create(createRestaurantInput);
+            const newRestaurant = this.restaurants.create(createRestaurantInput);
             newRestaurant.owner = owner
             const category = await this.categories.getOrCreate(createRestaurantInput.categoryName);
 
             newRestaurant.category = category;
-            await this.restaurant.save(newRestaurant); //!add to database
+            await this.restaurants.save(newRestaurant); //!add to database
             return {
                 ok: true,
             }
@@ -43,7 +43,7 @@ export class RestaurantService {
     async editRestaurant(owner: User, editRestaurantInput: EditRestaurantInput): Promise<EditRestaurantOutput> {
 
         try {
-            const restaurant = await this.restaurant.findOne(editRestaurantInput.restaurantId, { loadRelationIds: true })
+            const restaurant = await this.restaurants.findOne(editRestaurantInput.restaurantId, { loadRelationIds: true })
 
             if (!restaurant) {
                 return {
@@ -62,7 +62,7 @@ export class RestaurantService {
                 category = await this.categories.getOrCreate(editRestaurantInput.categoryName)
             }
 
-            await this.restaurant.save([{
+            await this.restaurants.save([{
                 id: editRestaurantInput.restaurantId,
                 ...editRestaurantInput,
                 category: category
@@ -80,7 +80,7 @@ export class RestaurantService {
 
     async deleteRestaurant(owner: User, { restaurantId }: DeleteRestaurantInput): Promise<DeleteRestaurantOutput> {
         try {
-            const restaurant = await this.restaurant.findOne(restaurantId, { loadRelationIds: true })
+            const restaurant = await this.restaurants.findOne(restaurantId, { loadRelationIds: true })
 
             if (!restaurant) {
                 return {
@@ -123,10 +123,10 @@ export class RestaurantService {
     }
 
     countRestaurants(category: Category) {
-        return this.restaurant.count({ category })
+        return this.restaurants.count({ category })
     }
 
-    async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+    async findCategoryBySlug({ slug, page }: CategoryInput): Promise<CategoryOutput> {
         try {
             const category = await this.categories.findOne({ slug }, { relations: ["restaurants"] })
             if (!category) {
@@ -135,9 +135,22 @@ export class RestaurantService {
                     error: "Category not found"
                 }
             }
+
+            const restaurants = await this.restaurants.find(
+                {
+                    where: {
+                        category,
+                    },
+                    take: 25,
+                    skip: (page - 1) * 25
+                }
+            );
+            category.restaurants = restaurants;
+            const totalResults = await this.countRestaurants(category)
             return {
                 ok: true,
-                category
+                category,
+                totalPages: Math.ceil(totalResults / 25)
             }
         } catch {
             return {
