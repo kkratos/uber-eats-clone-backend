@@ -7,6 +7,7 @@ import { CategoryInput, CategoryOutput } from "./dto/category.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dto/create-restaurant.dto";
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dto/delete-restaurant.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dto/edit-restaurant.dto";
+import { RestaurantInput, RestaurantOutput } from "./dto/restaurant.dto";
 import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurants.entity";
 import { CategoryRepository } from "./repositories/category.repository";
@@ -156,6 +157,27 @@ export class RestaurantService {
             return {
                 ok: false,
                 error: "Could not load category"
+            }
+        }
+    }
+
+    async allRestaurants({ page }: RestaurantInput): Promise<RestaurantOutput> {
+        try {
+            const [restaurants, totalResults] = await this.restaurants.findAndCount({
+                skip: (page - 1) * 25,
+                take: 25,
+
+            });
+            return {
+                ok: true,
+                results: restaurants,
+                totalPages: Math.ceil(totalResults / 25),
+                totalResults
+            }
+        } catch {
+            return {
+                ok: false,
+                error: 'could not load restaurants'
             }
         }
     }
