@@ -25,3 +25,11 @@ The Backend of uber eats clone.
 - address
 - coverImage
 
+- Create Dish
+- Edit Dish
+- Delete Dish
+
+- Orders CRUD
+- Orders Subscription (owner, customer, delivery)
+
+- Payments (CRON)
