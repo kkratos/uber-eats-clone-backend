@@ -1,5 +1,5 @@
 import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { Restaurant } from './entities/restaurants.entity';
+import { Restaurant } from './entities/restaurant.entity';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dto/create-restaurant.dto'
 import { RestaurantService } from './restaurants.service';
 import { User, UserRole } from 'src/users/entities/user.entity';
