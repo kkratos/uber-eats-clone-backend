@@ -4,6 +4,19 @@ import { CoreEntity } from "src/common/entities/core.entity";
 import { Column, Entity, ManyToOne, RelationId } from "typeorm";
 import { Restaurant } from "./restaurant.entity";
 
+@InputType('DishOptionsInputType', { isAbstract: true })
+@ObjectType()
+class DishOptions {
+    @Field(type => String)
+    name: string;
+
+    @Field(type => [String], { nullable: true })
+    choice?: string[]
+
+    @Field(type => Int)
+    extra: number
+}
+
 @InputType('DishInputType', { isAbstract: true })
 @ObjectType()  //! Object type of grapgql
 @Entity()      //! entity type for typeorm
@@ -20,8 +33,8 @@ export class Dish extends CoreEntity {
     @IsNumber()
     price: number;
 
-    @Field(type => String)
-    @Column({ unique: true })
+    @Field(type => String, { nullable: true })
+    @Column({ nullable: true })
     @IsString()
     photo: string;
 
@@ -36,4 +49,10 @@ export class Dish extends CoreEntity {
 
     @RelationId((dish: Dish) => dish.restaurant)
     restaurantId: number;
+
+    @Field(type => [DishOptions], {
+        nullable: true
+    })
+    @Column({ type: "json", nullable: true })
+    options: DishOptions[]
 }

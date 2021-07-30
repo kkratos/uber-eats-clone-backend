@@ -4,6 +4,7 @@ import { User } from "src/users/entities/user.entity";
 import { Like, Raw, Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dto/all-category.dto";
 import { CategoryInput, CategoryOutput } from "./dto/category.dto";
+import { CreateDishInput } from "./dto/create-dish.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dto/create-restaurant.dto";
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dto/delete-restaurant.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dto/edit-restaurant.dto";
@@ -186,7 +187,7 @@ export class RestaurantService {
 
     async findRestaurantById({ restaurantId }: RestaurantInput): Promise<RestaurantOutput> {
         try {
-            const restaurant = await this.restaurants.findOne(restaurantId)
+            const restaurant = await this.restaurants.findOne(restaurantId, { relations: ['menu'] })
             return {
                 ok: true,
                 restaurant
@@ -220,6 +221,12 @@ export class RestaurantService {
                 ok: false,
                 error: "Could not search for restaurant"
             }
+        }
+    }
+
+    async createDish(owner: User, createDishInput: CreateDishInput): Promise<CreateRestaurantOutput> {
+        return{
+            ok:false,
         }
     }
 }
