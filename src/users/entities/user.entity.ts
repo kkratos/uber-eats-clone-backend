@@ -8,7 +8,7 @@ import { Restaurant } from "src/restaurants/entities/restaurant.entity";
 import { Order } from "src/orders/entities/order.entity";
 
 export enum UserRole {
-    Client = " Client",
+    Client = "Client",
     Owner = "Owner",
     Delivery = "Delivery"
 }
