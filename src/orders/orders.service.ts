@@ -196,68 +196,68 @@ export class OrderService {
         }
     }
 
-    async editOrder(user: User, { id: orderId, status }: EditOrderInput): Promise<EditOrderOutput> {
+    async editOrder(
+        user: User,
+        { id: orderId, status }: EditOrderInput,
+    ): Promise<EditOrderOutput> {
         try {
-            const order = await this.orders.findOne(orderId, {
-                relations: ['restaurant', "customer", "driver"]
-            })
-
+            const order = await this.orders.findOne(orderId);
             if (!order) {
                 return {
                     ok: false,
-                    error: 'Order not found'
-                }
+                    error: 'Order not found.',
+                };
             }
-
             if (!this.canSeeOrder(user, order)) {
                 return {
                     ok: false,
-                    error: "Can't see this"
-                }
+                    error: "Can't see this.",
+                };
             }
-            let canEdit = true
+            let canEdit = true;
             if (user.role === UserRole.Client) {
-                canEdit = false
+                canEdit = false;
             }
-
             if (user.role === UserRole.Owner) {
                 if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
-                    canEdit = false
+                    canEdit = false;
                 }
             }
-
             if (user.role === UserRole.Delivery) {
-                if (status !== OrderStatus.PickedUp && status !== OrderStatus.Delivered) {
-                    canEdit = false
+                if (
+                    status !== OrderStatus.PickedUp &&
+                    status !== OrderStatus.Delivered
+                ) {
+                    canEdit = false;
                 }
             }
-
             if (!canEdit) {
                 return {
                     ok: false,
-                    error: " You can't do that."
-                }
+                    error: "You can't do that.",
+                };
             }
-
             await this.orders.save({
-                id: order.id,
-                status
-            })
-            const newOrder = { ...order, status }
+                id: orderId,
+                status,
+            });
+            const newOrder = { ...order, status };
             if (user.role === UserRole.Owner) {
                 if (status === OrderStatus.Cooked) {
-                    await this.pubSub.publish(NEW_COOKED_ORDER, { cookedOrders: newOrder })
+                    await this.pubSub.publish(NEW_COOKED_ORDER, {
+                        cookedOrders: newOrder,
+                    });
                 }
             }
-            await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdated: newOrder })
+            await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder });
             return {
-                ok: true
-            }
+                ok: true,
+            };
         } catch {
             return {
                 ok: false,
-                error: "Could'nt edit order"
-            }
+                error: 'Could not edit order.',
+            };
         }
     }
 }
