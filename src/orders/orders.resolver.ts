@@ -94,7 +94,6 @@ export class OrderResolver {
 
     @Mutation(returns => TakeOrderOutput)
     @Role(['Delivery'])
-
     takeOrder(@AuthUser() driver: User, @Args('input') takeOrderInput: TakeOrderInput): Promise<TakeOrderOutput> {
         return this.ordersService.takeOrder(driver, takeOrderInput)
     }
