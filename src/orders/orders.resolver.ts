@@ -10,6 +10,7 @@ import { EditOrderInput, EditOrderOutput } from "./dto/edit-order.dto";
 import { GetOrderInput, GetOrderOutput } from "./dto/get-order.dto";
 import { GetOrdersInput, GetOrdersOutput } from "./dto/get-orders.dto";
 import { OrderUpdatesInput } from "./dto/order-updates.dto";
+import { TakeOrderInput, TakeOrderOutput } from "./dto/take-order.dto";
 import { Order } from "./entities/order.entity";
 import { OrderService } from "./orders.service";
 
@@ -90,4 +91,12 @@ export class OrderResolver {
     orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
         return this.pubSub.asyncIterator(NEW_ORDER_UPDATE);
     }
+
+    @Mutation(returns => TakeOrderOutput)
+    @Role(['Delivery'])
+
+    takeOrder(@AuthUser() driver: User, @Args('input') takeOrderInput: TakeOrderInput): Promise<TakeOrderOutput> {
+        return this.ordersService.takeOrder(driver, takeOrderInput)
+    }
+
 }
