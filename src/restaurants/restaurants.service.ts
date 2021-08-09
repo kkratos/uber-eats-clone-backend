@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
-import { Like, Raw, Repository } from "typeorm";
+import { LessThan, Like, Raw, Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dto/all-category.dto";
 import { CategoryInput, CategoryOutput } from "./dto/category.dto";
 import { CreateDishInput, CreateDishOutput } from "./dto/create-dish.dto";
